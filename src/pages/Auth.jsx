@@ -82,7 +82,7 @@ const Auth = () => {
         }
 
         showToast("Logged in successfully.", "success");
-        navigate("/");
+        navigate("/Dashboard");
       }
     } catch (error) {
       const message = error?.message || "Something went wrong. Please try again.";
@@ -126,10 +126,10 @@ const Auth = () => {
               className="text-3xl md:text-4xl font-bold mb-2 font-poppins"
               style={{ color: colors.darkgray }}
             >
-              {isSignup ? "Create Account" : "Sign In"}
+              {isSignup ? "Create Account" : "Admin Sign In"}
             </h1>
             <p className="text-sm md:text-base text-gray-500 font-poppins">
-              {isSignup ? "Join our healthcare network today." : "Unlock your world."}
+              {isSignup ? "" : "Unlock your Pannel access."}
             </p>
           </div>
 

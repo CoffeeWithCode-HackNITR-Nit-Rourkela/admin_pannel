@@ -6,13 +6,24 @@ import { getAdminProfile } from "../../apis/auth";
 import { Sidebar } from "../../components/layouts/Sidebar";
 import Approval from "./Approval";
 import Doctors from "./Doctors";
-
-const Home = () => {
+import Profile from "./Profile";
+const Dashboard = () => {
   const navigate = useNavigate();
 
   const [admin, setAdmin] = useState(null);
   const [error, setError] = useState("");
-  const [activeSection, setActiveSection] = useState("Approvals");
+  const [activeSection, setActiveSection] = useState(() => {
+    const stored = localStorage.getItem("adminActiveSection");
+    const validSections = [
+      "Dashboard",
+      "Approvals",
+      "Doctors",
+      "Patients",
+      "Profile",
+      "Settings",
+    ];
+    return validSections.includes(stored) ? stored : "Approvals";
+  });
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -37,16 +48,23 @@ const Home = () => {
     fetchAdmin();
   }, []);
 
+  const handleSectionChange = (section) => {
+    setActiveSection(section);
+    localStorage.setItem("adminActiveSection", section);
+  };
+
   const renderContent = () => {
-    if (activeSection === "Approvals") return <Approval />;
-    if (activeSection === "Doctors") return <Doctors />;
-    if (activeSection === "Dashboard") {
+     if (activeSection === "Dashboard") {
       return (
         <p className="text-base" style={{ color: colors.darkgray }}>
           Dashboard overview coming soon.
         </p>
       );
     }
+    if (activeSection === "Approvals") return <Approval />;
+    if (activeSection === "Doctors") return <Doctors />;
+     if (activeSection === "Profile") return <Profile />;
+   
     return (
       <p className="text-base" style={{ color: colors.darkgray }}>
         {activeSection} section coming soon.
@@ -73,7 +91,7 @@ const Home = () => {
     >
       {/* Desktop Sidebar */}
       <div className="hidden md:block h-full min-h-screen">
-        <Sidebar active={activeSection} onChange={setActiveSection} />
+        <Sidebar active={activeSection} onChange={handleSectionChange} />
       </div>
 
       <div className="flex-1 p-3 md:p-7 flex flex-col gap-4 min-h-screen">
@@ -82,7 +100,7 @@ const Home = () => {
             {/* Mobile menu button */}
             <button
               type="button"
-              className="md:hidden inline-flex items-center justify-center  rounded-full shadow-md bg-white"
+              className="md:hidden inline-flex p-3 items-center justify-center  rounded-full shadow-md bg-white"
               style={{ color: colors.hoverPink }}
               onClick={openSidebar}
             >
@@ -137,7 +155,7 @@ const Home = () => {
             <Sidebar
               active={activeSection}
               onChange={(section) => {
-                setActiveSection(section);
+                handleSectionChange(section);
                 closeSidebar();
               }}
               onClose={closeSidebar}
@@ -149,4 +167,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Dashboard;

@@ -1,15 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { 
   FiGrid, 
   FiCheckCircle, 
   FiUser, 
   FiUsers, 
-  FiSettings, 
   FiLogOut,
   FiActivity,
   FiX,
+  FiLoader // Added for loading state
 } from "react-icons/fi";
 import { colors } from "../../constants/color";
+import { adminLogout } from "../../apis/auth";
 
 const items = [
   { label: "Dashboard", icon: <FiGrid /> },
@@ -17,10 +19,31 @@ const items = [
   { label: "Doctors", icon: <FiActivity /> },
   { label: "Patients", icon: <FiUsers /> },
   { label: "Profile", icon: <FiUser /> },
-  { label: "Settings", icon: <FiSettings /> },
 ];
 
 export const Sidebar = ({ active, onChange, onClose }) => {
+  const navigate = useNavigate();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const handleLogout = async () => {
+    try {
+      setIsLoggingOut(true);
+      
+      // 1. Call the API (optional but recommended for session cleanup on server)
+      await adminLogout(); 
+    } catch (error) {
+      console.error("Logout API failed, proceeding with local cleanup:", error);
+    } finally {
+      // 2. Clear Local Storage
+      localStorage.clear(); 
+      // Or specifically: localStorage.removeItem("adminToken");
+
+      // 3. Redirect to Login
+      navigate("/login");
+      setIsLoggingOut(false);
+    }
+  };
+
   return (
     <aside 
       className="min-h-screen w-full md:w-72 bg-white rounded-r-[40px] shadow-2xl flex flex-col py-8 px-6 transition-all duration-300"
@@ -68,16 +91,15 @@ export const Sidebar = ({ active, onChange, onClose }) => {
               className="group w-full flex items-center gap-4 text-sm md:text-base font-semibold rounded-2xl px-4 py-3.5 transition-all duration-200 relative overflow-hidden"
               style={{
                 backgroundColor: isActive ? colors.primepink : "transparent",
-                color: isActive ? colors.darkgray : "#6B7280", // Gray-500 for inactive
+                color: isActive ? colors.darkgray : "#6B7280",
               }}
               onMouseEnter={(e) => {
-                if (!isActive) e.currentTarget.style.backgroundColor = `${colors.primepink}50`; // 50 is hex alpha
+                if (!isActive) e.currentTarget.style.backgroundColor = `${colors.primepink}50`;
               }}
               onMouseLeave={(e) => {
                 if (!isActive) e.currentTarget.style.backgroundColor = "transparent";
               }}
             >
-              {/* Active Indicator Bar */}
               {isActive && (
                 <div 
                   className="absolute left-0 top-1/4 bottom-1/4 w-1 rounded-r-full"
@@ -99,13 +121,19 @@ export const Sidebar = ({ active, onChange, onClose }) => {
       {/* Footer / Logout */}
       <div className="pt-6 mt-6 border-t border-gray-100">
         <button
-          className="w-full flex items-center gap-4 px-4 py-3 text-sm font-semibold rounded-2xl transition-colors font-poppins"
+          onClick={handleLogout}
+          disabled={isLoggingOut}
+          className="w-full flex items-center gap-4 px-4 py-3 text-sm font-semibold rounded-2xl transition-all font-poppins disabled:opacity-50"
           style={{ color: colors.primeRed }}
-          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#FFF5F5"}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+          onMouseEnter={(e) => !isLoggingOut && (e.currentTarget.style.backgroundColor = "#FFF5F5")}
+          onMouseLeave={(e) => !isLoggingOut && (e.currentTarget.style.backgroundColor = "transparent")}
         >
-          <FiLogOut size={18} />
-          <span>Logout</span>
+          {isLoggingOut ? (
+            <FiLoader className="animate-spin" size={18} />
+          ) : (
+            <FiLogOut size={18} />
+          )}
+          <span>{isLoggingOut ? "Logging out..." : "Logout"}</span>
         </button>
       </div>
     </aside>
