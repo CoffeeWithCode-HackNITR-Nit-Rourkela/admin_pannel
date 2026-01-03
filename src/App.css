@@ -1,1 +1,18 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* Core Palette - light, skin, healthcare oriented */
+  --color-base: #fefdfc;
+  --color-text: #2E2E2E;
+  --color-prime-green: #0BA5A0;
+  --color-prime-pink: #FFE1C9;
+  --color-hover-pink: #ff8544;
+  --color-white: #FFFFFF;
+  --color-red: #FF4B4B;
+
+  /* Spacing & Border Radius */
+  --radius-lg: 0.5rem; /* 8px */
+  --transition: all 0.3s ease;
+}
+

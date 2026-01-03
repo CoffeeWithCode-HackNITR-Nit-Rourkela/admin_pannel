@@ -1,16 +1,17 @@
-import { useState } from 'react'
-
-import './App.css'
+import "./App.css";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Home from "./pages/home/Home";
+import Auth from "./pages/Auth";
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-    <p className='text-center'>hello</p>
-     
-    </>
-  )
+    <BrowserRouter>
+      <Routes>
+        <Route path="/login" element={<Auth />} />
+        <Route path="/" element={<Home />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
