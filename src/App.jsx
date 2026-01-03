@@ -13,6 +13,15 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
+// Public routes (e.g. /login): if already authenticated, redirect to dashboard
+const PublicRoute = ({ children }) => {
+  const token = localStorage.getItem("adminToken");
+  if (token) {
+    return <Navigate to="/Dashboard" replace />;
+  }
+  return children;
+};
+
 
 function App() {
   return (

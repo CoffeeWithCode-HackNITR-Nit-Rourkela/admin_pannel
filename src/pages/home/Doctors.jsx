@@ -41,7 +41,7 @@ const Doctors = () => {
   }, []);
 
   return (
-    <div className="card-shadow glass-effect rounded-2xl p-4 w-full">
+    <div className="card-shadow max-h-screen glass-effect rounded-2xl p-4 w-full">
       <div className="flex items-center justify-between mb-3">
         <h2
           className="text-lg md:text-xl font-semibold"
@@ -70,7 +70,7 @@ const Doctors = () => {
       )}
 
       {isLoading ? (
-        <div className="space-y-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 overflow-y-auto pr-1">
+        <div className="space-y-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 overflow-y-auto pr-1">
         <DoctorsSkeleton />
         </div>
       ) : doctors.length === 0 ? (
@@ -81,7 +81,7 @@ const Doctors = () => {
           No approved doctors found.
         </p>
       ) : (
-        <div className="space-y-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 overflow-y-auto pr-1">
+        <div className="space-y-3 grid grid-cols-1 md:grid-cols-2 gap-4 lg:grid-cols-3 overflow-y-auto pr-1">
           {doctors.map((doctor) => (
             <DoctorCard
               key={doctor.id}

@@ -16,6 +16,7 @@ const Approval = () => {
   const { showToast } = useToast();
   const [pendingDoctors, setPendingDoctors] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isActionLoading, setIsActionLoading] = useState(false);
   const [error, setError] = useState("");
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [modalState, setModalState] = useState({
@@ -62,17 +63,18 @@ const Approval = () => {
     const doctor = modalState.doctor;
     if (!doctor) return;
     try {
-      setIsLoading(true);
+      setIsActionLoading(true);
       await approveDoctor(doctor.id);
       showToast("Doctor approved successfully.", "success");
       closeConfirm();
-      await fetchData();
+      // Remove approved doctor from local state without reloading the whole page
+      setPendingDoctors((prev) => prev.filter((d) => d.id !== doctor.id));
     } catch (err) {
       const message = err?.message || "Failed to approve doctor";
       setError(message);
       showToast(message, "error");
     } finally {
-      setIsLoading(false);
+      setIsActionLoading(false);
     }
   };
 
@@ -80,21 +82,22 @@ const Approval = () => {
     const doctor = modalState.doctor;
     if (!doctor) return;
     try {
-      setIsLoading(true);
+      setIsActionLoading(true);
       await rejectDoctor(doctor.id);
       showToast("Doctor rejected.", "success");
       closeConfirm();
-      await fetchData();
+      // Remove rejected doctor from local state without reloading the whole page
+      setPendingDoctors((prev) => prev.filter((d) => d.id !== doctor.id));
     } catch (err) {
       const message = err?.message || "Failed to reject doctor";
       setError(message);
       showToast(message, "error");
     } finally {
-      setIsLoading(false);
+      setIsActionLoading(false);
     }
   };
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 w-full">
+    <div className=" gap-5 w-full">
       <section className="flex-1 card-shadow glass-effect rounded-2xl p-4">
         <div className="flex items-center justify-between mb-3">
           <h2
@@ -113,35 +116,34 @@ const Approval = () => {
             {pendingDoctors.length} pending
           </span>
         </div>
-
-        {isLoading ? (
-             <div className="space-y-3 max-h-[420px] overflow-y-auto pr-1">
-          <PendingApprovalsSkeleton />
-          </div>
-        ) : pendingDoctors.length === 0 ? (
-          <p
-            className="text-sm md:text-base"
-            style={{ color: colors.darkgray }}
-          >
-            No pending doctor approvals.
-          </p>
-        ) : (
-          <div className="space-y-3 max-h-[420px] overflow-y-auto pr-1">
-            {pendingDoctors.map((doctor) => (
-              <DoctorCard
-                key={doctor.id}
-                doctor={doctor}
-                isProcessing={isLoading}
-                onClick={(doc) => {
-                  setSelectedDoctor(doc);
-                  setIsDetailsOpen(true);
-                }}
-                onApprove={(doc) => openConfirm("approve", doc)}
-                onReject={(doc) => openConfirm("reject", doc)}
-              />
-            ))}
-          </div>
-        )}
+        <div className="max-h-screen overflow-y-auto pr-1">
+          {isLoading ? (
+            <PendingApprovalsSkeleton />
+          ) : pendingDoctors.length === 0 ? (
+            <p
+              className="text-sm md:text-base"
+              style={{ color: colors.darkgray }}
+            >
+              No pending doctor approvals.
+            </p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
+              {pendingDoctors.map((doctor) => (
+                <DoctorCard
+                  key={doctor.id}
+                  doctor={doctor}
+                  isProcessing={isActionLoading}
+                  onClick={(doc) => {
+                    setSelectedDoctor(doc);
+                    setIsDetailsOpen(true);
+                  }}
+                  onApprove={(doc) => openConfirm("approve", doc)}
+                  onReject={(doc) => openConfirm("reject", doc)}
+                />
+              ))}
+            </div>
+          )}
+        </div>
       </section>
 
       <DoctorDetailsModal
@@ -150,7 +152,7 @@ const Approval = () => {
         doctor={selectedDoctor}
         onApprove={(doc) => openConfirm("approve", doc)}
         onReject={(doc) => openConfirm("reject", doc)}
-        isProcessing={isLoading}
+        isProcessing={isActionLoading}
       />
 
       <ConfirmActionModal
@@ -159,7 +161,7 @@ const Approval = () => {
         doctorName={modalState.doctor?.fullName || "this doctor"}
         onConfirm={modalState.type === "approve" ? handleApprove : handleReject}
         onCancel={closeConfirm}
-        isProcessing={isLoading}
+        isProcessing={isActionLoading}
       />
     </div>
   );

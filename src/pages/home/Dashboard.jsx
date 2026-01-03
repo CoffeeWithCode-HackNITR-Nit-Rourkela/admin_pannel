@@ -86,7 +86,7 @@ const Dashboard = () => {
 
   return (
     <div
-      className="min-h-screen flex flex-col md:flex-row gap-4 md:gap-6 "
+      className="min-h-screen max-h-screen flex flex-col md:flex-row gap-4 md:gap-6 overflow-hidden"
       style={{ backgroundColor: colors.base }}
     >
       {/* Desktop Sidebar */}
@@ -133,7 +133,9 @@ const Dashboard = () => {
           </div>
         )}
 
-        <main className="flex-1">{renderContent()}</main>
+        <main className="flex-1 overflow-y-auto max-h-full">
+          {renderContent()}
+        </main>
       </div>
 
       {/* Mobile Sidebar Drawer */}
