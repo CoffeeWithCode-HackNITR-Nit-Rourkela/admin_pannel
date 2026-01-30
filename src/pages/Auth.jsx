@@ -190,12 +190,12 @@ const Auth = () => {
                 {isSignup ? "Sign Up" : "Sign In"}
               </Button>
 
-              <div className="flex items-center my-6">
+              {/* <div className="flex items-center my-6">
                 <div className="flex-1 border-t border-gray-200"></div>
                 <span className="px-4 text-sm text-gray-400 font-poppins">OR</span>
                 <div className="flex-1 border-t border-gray-200"></div>
-              </div>
-
+              </div> */}
+{/* 
               <Button
                 type="button"
                 variant="outline"
@@ -207,7 +207,7 @@ const Auth = () => {
                 }}
               >
                 {isSignup ? "Already have an account? Sign In" : "Create an account"}
-              </Button>
+              </Button> */}
             </div>
           </form>
         </div>
